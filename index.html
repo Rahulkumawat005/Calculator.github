@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+          body{
+            background-image: url(./imgae/background\ image1.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .box{
+            height: auto;
+            width: 36%;
+            margin-left: 400px;
+            margin-top: 10px;
+            background-color: black;
+        }
+        .head{
+            color: aliceblue;
+            margin-left: 40px;
+            padding-top: 30px;
+        }
+        .head input{
+            height: 35px;
+            width: 60%;
+            background-color: rgb(52, 20, 20);
+        }
+        .nav{
+            margin-top: 35px;
+            margin-left: 6px;
+        }
+        .nav input{
+            background-color: rgb(145, 146, 148);
+            width: 96%;
+            height: 50px;
+            font-size: 22px;
+            text-align: right;
+            padding-right: 10px;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', monospace;
+        }
+        .main{
+            margin-top: 43px;
+            margin-left: 5px;
+        }
+        .main table{
+            width: 100%;
+        }
+        .main table td{
+            padding: 2px;
+        }
+        button{
+            width: 100%;
+            height: 50px;
+            background-color: rgb(201, 202, 203);
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover{
+            background-color: lightblue;
+            color: white;
+        }
+        button:active{
+            transform: scale(0.96);
+        }
+        #plus{
+            height: 120px;
+        }
+        #ac{
+            background-color: rgb(116, 12, 12);
+            color: white;
+        }
+
+        /* ===== RESPONSIVE CSS ===== */
+        @media (max-width: 900px) {
+            .box{
+                width: 60%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .box{
+                width: 95%;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 10px;
+            }
+            .nav input{
+                font-size: 18px;
+                height: 44px;
+            }
+            button{
+                font-size: 13px;
+                height: 44px;
+            }
+            #plus{
+                height: 96px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            button{
+                font-size: 11px;
+                height: 38px;
+            }
+            #plus{
+                height: 84px;
+            }
+            .nav input{
+                font-size: 16px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="head">
+            <tr>
+                <td>CASIO</td>
+                <td><input type="text"></td>
+                <td>MZ-12sa</td>
+            </tr>
+        </div>
+        <div class="nav">
+            <input type="text" id="display" placeholder="0" readonly>
+        </div>
+        <div class="main">
+            <table border="1">
+                <tr>
+                    <td colspan="3"></td>
+                    <td><button onclick="calcPercent()">%</button></td>
+                    <td><button onclick="gtFunc()">GT</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="calcSqrt()">√</button></td>
+                    <td><button onclick="mrc()">MRC</button></td>
+                    <td><button onclick="mMinus()">M-</button></td>
+                    <td><button onclick="mPlus()">M+</button></td>
+                    <td><button onclick="setOp('÷')">÷</button></td>
+                </tr>
+                 <tr>
+                    <td><button onclick="toggleSign()">+/-</button></td>
+                    <td><button onclick="appendNum('7')">7</button></td>
+                    <td><button onclick="appendNum('8')">8</button></td>
+                    <td><button onclick="appendNum('9')">9</button></td>
+                    <td><button onclick="setOp('×')">x</button></td>
+                </tr>
+                 <tr>
+                    <td><button onclick="backspace()">➤</button></td>
+                    <td><button onclick="appendNum('4')">4</button></td>
+                    <td><button onclick="appendNum('5')">5</button></td>
+                    <td><button onclick="appendNum('6')">6</button></td>
+                    <td><button onclick="setOp('-')">-</button></td>
+                </tr>
+                 <tr>
+                    <td><button id="ac" onclick="clearAll()">C/AC</button></td>
+                    <td><button onclick="appendNum('1')">1</button></td>
+                    <td><button onclick="appendNum('2')">2</button></td>
+                    <td><button onclick="appendNum('3')">3</button></td>
+                    <td rowspan="2"><button id="plus" onclick="setOp('+')">+</button></td>
+                </tr>
+                 <tr>
+                    <td><button onclick="appendNum('0')">0</button></td>
+                    <td><button onclick="appendNum('00')">00</button></td>
+                    <td><button onclick="appendDot()">.</button></td>
+                    <td><button onclick="calculate()">=</button></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '';
+        let firstOperand = null;
+        let operator = null;
+        let justCalculated = false;
+        let memory = 0;
+        let gt = 0;
+
+        const display = document.getElementById('display');
+
+        function updateDisplay(val) {
+            display.value = val === '' ? '' : val;
+        }
+
+        function appendNum(num) {
+            if (justCalculated) { currentInput = ''; justCalculated = false; }
+            if (currentInput.length >= 12) return;
+            currentInput += num;
+            updateDisplay(currentInput);
+        }
+
+        function appendDot() {
+            if (justCalculated) { currentInput = '0'; justCalculated = false; }
+            if (currentInput.includes('.')) return;
+            if (currentInput === '') currentInput = '0';
+            currentInput += '.';
+            updateDisplay(currentInput);
+        }
+
+        function setOp(op) {
+            if (currentInput === '' && firstOperand === null) return;
+            if (currentInput !== '' && firstOperand !== null) calculate(true);
+            if (currentInput !== '') firstOperand = parseFloat(currentInput);
+            operator = op;
+            currentInput = '';
+            justCalculated = false;
+        }
+
+        function calculate(chain = false) {
+            if (firstOperand === null || operator === null || currentInput === '') return;
+            const second = parseFloat(currentInput);
+            let result;
+            switch (operator) {
+                case '+': result = firstOperand + second; break;
+                case '-': result = firstOperand - second; break;
+                case '×': result = firstOperand * second; break;
+                case '÷':
+                    if (second === 0) { updateDisplay('Error'); currentInput = ''; return; }
+                    result = firstOperand / second; break;
+                default: return;
+            }
+            result = parseFloat(result.toPrecision(10));
+            if (!chain) gt += result;
+            currentInput = String(result);
+            updateDisplay(currentInput);
+            firstOperand = result;
+            if (!chain) { operator = null; justCalculated = true; }
+        }
+
+        function clearAll() {
+            currentInput = ''; firstOperand = null; operator = null; justCalculated = false;
+            updateDisplay('');
+        }
+
+        function backspace() {
+            if (justCalculated) { clearAll(); return; }
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay(currentInput);
+        }
+
+        function toggleSign() {
+            if (currentInput === '' || currentInput === '0') return;
+            currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
+            updateDisplay(currentInput);
+        }
+
+        function calcPercent() {
+            if (currentInput === '') return;
+            let val = parseFloat(currentInput);
+            val = (firstOperand !== null && (operator === '+' || operator === '-'))
+                ? firstOperand * val / 100 : val / 100;
+            currentInput = String(parseFloat(val.toPrecision(10)));
+            updateDisplay(currentInput);
+        }
+
+        function calcSqrt() {
+            if (currentInput === '') return;
+            const val = parseFloat(currentInput);
+            if (val < 0) { updateDisplay('Error'); return; }
+            currentInput = String(parseFloat(Math.sqrt(val).toPrecision(10)));
+            updateDisplay(currentInput);
+            justCalculated = true;
+        }
+
+        function mPlus() { if (currentInput !== '') memory += parseFloat(currentInput); }
+        function mMinus() { if (currentInput !== '') memory -= parseFloat(currentInput); }
+        function mrc() { currentInput = String(memory); updateDisplay(currentInput); }
+        function gtFunc() { currentInput = String(parseFloat(gt.toPrecision(10))); updateDisplay(currentInput); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') appendNum(e.key);
+            else if (e.key === '.') appendDot();
+            else if (e.key === '+') setOp('+');
+            else if (e.key === '-') setOp('-');
+            else if (e.key === '*') setOp('×');
+            else if (e.key === '/') { e.preventDefault(); setOp('÷'); }
+            else if (e.key === 'Enter' || e.key === '=') calculate();
+            else if (e.key === 'Backspace') backspace();
+            else if (e.key === 'Escape') clearAll();
+        });
+    </script>
+</body>
+</html>
